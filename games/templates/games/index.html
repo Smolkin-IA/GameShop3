@@ -1,0 +1,239 @@
+{% extends "games/base.html" %}
+{% load static %}
+
+{% block title %}Главная страница{% endblock %}
+
+<!-- Подключение стилей для этого шаблона -->
+{% block extra_css %}
+    {{ block.super }}
+  
+{% endblock %}
+
+{% block 'content' %}
+    <div class="mb-4">
+      <div class="d-flex">
+        <form class="d-flex w-100 w-md-50" role="search" method="get">
+          <input class="form-control me-2" type="text" name="search" placeholder="Поиск" value="{{search}}" aria-label="Поиск" >
+          <button class="btn btn-outline-success" type="submit">Искать</button>
+        </form>
+        <div class="d-none d-md-flex ms-3 flex-grow-1 w-100 filter-container">
+
+          <div class="dropdown me-2 w-100">
+            <button class="btn btn-outline-secondary dropdown-toggle w-100 d-flex flex-row justify-content-between align-items-center" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+              {% if genre_id %}
+                {% for genre in genres %}
+                  {% if genre_id == genre.id %}
+                    {{genre.name}}
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                Все жанры
+              {% endif %}
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li>
+                <a class="dropdown-item {% if genre_id == 0 %} active {% endif %}" href="?genre=0">
+                  Все жанры
+                </a>
+              </li>
+              {% for genre in genres %}
+                <li>
+                  <a class="dropdown-item {% if genre_id == genre.id %} active {% endif %}" href="?genre={{ genre.id }}">
+                    {{ genre.name }}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <div class="dropdown me-2 w-100">
+            <button class="btn btn-outline-secondary dropdown-toggle w-100 d-flex flex-row justify-content-between align-items-center" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+              {% if publisher_id %}
+                {% for publisher in publishers %}
+                  {% if publisher_id == publisher.id %}
+                    {{publisher.name}}
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                Все издатели
+              {% endif %}
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li>
+                <a class="dropdown-item {% if genre_id == 0 %} active {% endif %}" href="?publisher=0">
+                  Все издатели
+                </a>
+              </li>
+              {% for publisher in publishers %}
+                <li>
+                  <a class="dropdown-item {% if publisher_id == publisher.id %} active {% endif %}" href="?publisher={{ publisher.id }}">
+                    {{ publisher.name }}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="d-md-none mb-4">
+      <div class="accordion" id="filterAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters">
+              Фильтры
+            </button>
+          </h2>
+          <div id="collapseFilters" class="accordion-collapse collapse" data-bs-parent="#filterAccordion">
+            <div class="accordion-body">
+
+              <div class="dropdown me-2 w-100">
+                <button class="btn btn-outline-secondary dropdown-toggle w-100 d-flex flex-row justify-content-between align-items-center mb-2" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                  {% if genre_id %}
+                    {% for genre in genres %}
+                      {% if genre_id == genre.id %}
+                        {{genre.name}}
+                      {% endif %}
+                    {% endfor %}
+                  {% else %}
+                    Все жанры
+                  {% endif %}
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <li>
+                    <a class="dropdown-item {% if genre_id == 0 %} active {% endif %}" href="?genre=0">
+                      Все жанры
+                    </a>
+                  </li>
+                  {% for genre in genres %}
+                    <li>
+                      <a class="dropdown-item {% if genre_id == genre.id %} active {% endif %}" href="?genre={{ genre.id }}">
+                        {{ genre.name }}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+    
+              <div class="dropdown me-2 w-100">
+                <button class="btn btn-outline-secondary dropdown-toggle w-100 d-flex flex-row justify-content-between align-items-center" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                  {% if publisher_id %}
+                    {% for publisher in publishers %}
+                      {% if publisher_id == publisher.id %}
+                        {{publisher.name}}
+                      {% endif %}
+                    {% endfor %}
+                  {% else %}
+                    Все издатели
+                  {% endif %}
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <li>
+                    <a class="dropdown-item {% if genre_id == 0 %} active {% endif %}" href="?publisher=0">
+                      Все издатели
+                    </a>
+                  </li>
+                  {% for publisher in publishers %}
+                    <li>
+                      <a class="dropdown-item {% if publisher_id == publisher.id %} active {% endif %}" href="?publisher={{ publisher.id }}">
+                        {{ publisher.name }}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Контент -->
+    <div class="container mt-5 mb-5">
+      {% if games %}
+      <!-- Блок с карточками -->
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 flex-grow-1">
+          <!-- Карточки игр -->
+          {% for game in games %}
+            <div class="col p-2">
+              <div class="card">
+                <a href="{% url 'games:game' game.id%}">
+                  <img src="{{game.main_image.url}}" class="card-img-top" alt="Изображение игры">
+                </a>
+                <div class="card-body">
+                  <a class="text-dark text-decoration-none" href="{% url 'games:game' game.id %}">
+                    <h5 class="card-title">{{game.name}}</h5>
+                  </a>
+                  <p class="card-text">Цена: {{game.price}} ₽</p>
+
+                  <!-- Кнопка для добавления в корзину -->
+                  {% if game.id in transactions %}
+                    <p><i class="fa fa-check"></i> Игра приобретена</p>
+                  {% else %}
+                    {% if game.id in cart %}
+                      <a href="{% url 'games:game_delete' game.id %}">
+                          <button class="btn btn-outline-dark">
+                            <i class="fa fa-trash"></i> 
+                            Удалить из корзины
+                          </button>
+                      </a>
+                    {% else %}
+                      <a href="{% url 'games:game_add' game.id %}">
+                          <button class="btn btn-outline-dark">
+                            <i class="fas fa-shopping-cart"></i>
+                            В корзину
+                          </button>
+                      </a>
+                    {% endif %}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+          {% else %}
+            <div class="col-12">
+              <h5 class="text-center">По вашему запросу ничего не найдено.</h5>
+            </div>
+          {% endif %}
+        </div>
+    </div>
+    <!-- Пагинация -->
+    {% if games %}
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center m-0">
+
+        <!-- Кнопка Previous -->
+        {% if prev_page < 1 %}
+          <li class="page-item disabled">
+        {% else %}
+          <li class="page-item">
+        {% endif %}
+            <a class="page-link" href="?page={{prev_page}}&genre={{genre_id}}&publisher={{publisher_id}}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+
+        <!-- Номера страниц -->
+        {% for page in pages %}
+          <li class="page-item {% if page == current_page %} active {% endif %}">
+            <a class="page-link" href="?page={{page}}&genre={{genre_id}}&publisher={{publisher_id}}">{{page}}</a>
+          </li>
+        {% endfor %}
+
+        <!-- Кнопка Next -->
+        {% if next_page > total_pages %}
+          <li class="page-item disabled">
+        {% else %}
+          <li class="page-item">
+        {% endif %}
+            <a class="page-link" href="?page={{next_page}}&genre={{genre_id}}&publisher={{publisher_id}}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+      </ul>
+    </nav>
+    {% endif %}
+{% endblock %}

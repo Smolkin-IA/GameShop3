@@ -1,0 +1,108 @@
+{% extends "games/base.html" %}
+{% load static %}
+
+{% block title %}{{game.name}}{% endblock %}
+
+<!-- Подключение стилей для этого шаблона -->
+{% block extra_css %}
+    {{ block.super }}<!-- Наследование стилей из родительского шаблона -->
+    <link rel="stylesheet" href="{% static 'css/game_style.css' %}">
+{% endblock %}
+
+{% block 'content' %}
+    <div class="row mb-5">
+      <h2>{{game.name}}</h2>
+      <div class="col-lg-7">
+        <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel" >
+            <div class="carousel-indicators">
+              {% for image in images %}
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ forloop.counter0 }}" 
+                        class="{% if forloop.first %}active{% endif %}" 
+                        aria-current="{% if forloop.first %}true{% endif %}" 
+                        aria-label="Slide {{ forloop.counter }}">
+                </button>
+              {% endfor %}
+            </div>
+            <div class="carousel-inner">
+              {% for image in images %}
+              <div class="carousel-item {% if forloop.first %} active {% endif %}">
+                <img src="{{image.image_path.url}}" class="d-block w-100" alt="Скриншот игры">
+              </div>
+              {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Предыдущий</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Следующий</span>
+            </button>
+          </div>
+      </div>
+      
+      <div class="col-lg-5">
+        <p class="mb-0"><strong>Описание:</strong></p>
+        <p class="mb-1">{{game.title}}</p>
+        <p class="mb-0"><strong>Жанры:</strong></p>
+        <p class="mb-1">
+          {% for genre in genres %}
+            {{genre.name}}
+          {% endfor %}
+        </p>
+        <p class="mb-0"><strong>Разработчик:</strong></p>
+        <p class="mb-1">{{game.developer_id}}</p>
+        <p class="mb-0"><strong>Издатель:</strong></p>
+        <p class="mb-1">{{game.publisher_id}}</p>
+        <p class="mb-0"><strong>Дата релиза:</strong></p>
+        <p class="mb-1">{{game.release_date}}</p>
+        <p class="mb-0"><strong>Цена:</strong></p>
+        <p class="mb-2">{{game.price}} ₽</p>
+        {% if game.id in transactions %}
+          <p><i class="fa fa-check"></i> Игра приобретена</p>
+        {% else %}
+          {% if game.id in cart %}
+            <a href="{% url 'games:game_delete' game.id %}">
+              <button class="btn btn-outline-dark"><i class="fa fa-trash"></i> Удалить из корзины</button>
+            </a>
+          {% else %}
+            <a href="{% url 'games:game_add' game.id %}">
+              <button class="btn btn-outline-dark"><i class="fas fa-shopping-cart"></i> В корзину</button>
+            </a>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+    <div class="row mb-5">
+        <div class="col-lg-6">
+          <h2>Об игре</h2>
+          <p>{{game.description|linebreaks}}</p>
+        </div>
+    </div>
+    <div class="row">
+      <h2 class="mb-4">Системные требования</h2>
+        <div class="col-lg-6">
+          <p>Минимальные:</p>
+          <ul>
+            <li><strong>OC:</strong> {{min_req.os}}</li>
+            <li><strong>Процессор:</strong> {{min_req.processor}}</li>
+            <li><strong>Оперативная память:</strong> {{min_req.memory}}</li>
+            <li><strong>Видеокарта:</strong> {{min_req.graphics}}</li>
+            <li><strong>DirectX:</strong> {{min_req.directx}}</li>
+            <li><strong>Место на диске:</strong> {{min_req.storage}}</li>
+          </ul>
+          
+        </div>    
+        <div class="col-lg-6">
+          <p>Рекомендованные:</p>
+          <ul>
+            <li><strong>OC:</strong> {{rec_req.os}}</li>
+            <li><strong>Процессор:</strong> {{rec_req.processor}}</li>
+            <li><strong>Оперативная память:</strong> {{rec_req.memory}}</li>
+            <li><strong>Видеокарта:</strong> {{rec_req.graphics}}</li>
+            <li><strong>DirectX:</strong> {{rec_req.directx}}</li>
+            <li><strong>Место на диске:</strong> {{rec_req.storage}}</li>
+          </ul>
+        </div>
+    </div>
+{% endblock %}
